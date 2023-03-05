@@ -1,0 +1,7 @@
+[theme] # You have to add this line
+
+primaryColor = '#FF4B4B' # Bright Orange
+
+backgroundColor = '#0E1117' # Dark Blue
+
+secondaryBackgroundColor = '#262730' # Lighter Blue

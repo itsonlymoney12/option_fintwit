@@ -9,6 +9,7 @@ import pandas as pd
 import yfinance as yf
 import numpy as np
 
+
 def get_expiry(ticker):
 	try:
 		nq = yf.Ticker(ticker)
@@ -47,29 +48,48 @@ def plot_double_bar_chart(option, ticker):
 
     option_data = get_calls(ticker, option)
 
-    try:
+    # try:
 
-	    df_calls = option_data[0]
-	    df_puts = option_data[1]
-	    last_close = option_data[2]
+    df_calls = option_data[0]
+    df_puts = option_data[1]
+    last_close = option_data[2]
 
-	    fig = go.Figure(data=[
-	        go.Bar(name='Calls OI', x=df_calls['strike'], y=df_calls['openInterest'], marker=dict(color='green')),
-	        go.Bar(name='Puts OI', x=df_puts['strike'], y=df_puts['openInterest'], marker=dict(color='#FF5757'))
-	    ])
-	    fig.update_layout(barmode='group', title=f'${ticker.upper()} - {option} Open Interest by Strike', xaxis_title='Strike', yaxis_title='Open Interest')
+    fig = go.Figure(data=[
+        go.Bar(name='Calls OI', x=df_calls['strike'], y=df_calls['openInterest'], marker=dict(color='green')),
+        go.Bar(name='Puts OI', x=df_puts['strike'], y=df_puts['openInterest'], marker=dict(color='#FF5757'))
+    ])
+    fig.update_layout(barmode='group', title=f'${ticker.upper()} - {option} Open Interest by Strike', xaxis_title='Strike', yaxis_title='Open Interest')
 
-	    fig.add_shape(type='line', x0=last_close, y0=0, x1=last_close, y1=max(np.max(df_calls['openInterest']),np.max(df_puts['openInterest'])), line=dict(color='yellow', width=3, dash='dash'), name='Prev. Close')
+    fig.add_shape(type='line', x0=last_close, y0=0, x1=last_close, y1=max(np.max(df_calls['openInterest']),np.max(df_puts['openInterest'])), line=dict(color='yellow', width=3, dash='dash'), name='Prev. Close')
 
-	    fig.add_annotation(text='@itsonlymoney12', xref='paper', yref='paper', x=0.0, y=0.85, showarrow=False, font=dict(color='lightgrey', size=20), opacity=0.4)
+    fig.add_annotation(text='@itsonlymoney12', xref='paper', yref='paper', x=0.0, y=0.85, showarrow=False, font=dict(color='lightgrey', size=20), opacity=0.4)
 
-	    fig.add_trace(
-	    	go.Scatter(x=[None], y=[None], mode='lines', line=dict(color='yellow', width=3, dash='dash'), name='Prev. Close')
-	    	)
-	    st.plotly_chart(fig)
+    fig.add_trace(
+    	go.Scatter(x=[None], y=[None], mode='lines', line=dict(color='yellow', width=3, dash='dash'), name='Prev. Close')
+    	)
 
-    except Exception as e:
-    	print('Ticker not working...')
+    fig.update_layout(
+    	plot_bgcolor='black',
+    	paper_bgcolor='black',
+    	template='plotly_dark',
+    	xaxis=dict(
+	        showgrid=False,
+	        zeroline=False,
+	        zerolinecolor='white',
+	        zerolinewidth=2
+    		),
+    	yaxis=dict(
+	        showgrid=False,
+	        zeroline=False,
+	        zerolinecolor='white',
+	        zerolinewidth=2
+    		)
+    	)
+
+    st.plotly_chart(fig)
+
+    # except Exception as e:
+    	# print('Ticker not working...')
 
 def get_call_oi(ticker, date_looked):
 	nq = yf.Ticker(ticker)
@@ -138,6 +158,25 @@ def plot_all_expiry(ticker):
 			])
 		fig.update_layout(barmode='group', title=f'${ticker.upper()} - Open Interest by Expiry Date in 2023', xaxis_title='Expiry Date', yaxis_title='Open Interest')
 		fig.add_annotation(text='@itsonlymoney12', xref='paper', yref='paper', x=0.5, y=0.85, showarrow=False, font=dict(color='lightgrey',size=20), opacity=0.4)
+
+		fig.update_layout(
+		    plot_bgcolor='black',
+		    paper_bgcolor='black',
+		    template='plotly_dark',
+		    xaxis=dict(
+		        showgrid=False,
+		        zeroline=False,
+		        zerolinecolor='white',
+		        zerolinewidth=2
+		    ),
+		    yaxis=dict(
+		        showgrid=False,
+		        zeroline=False,
+		        zerolinecolor='white',
+		        zerolinewidth=2
+		    )
+		)
+
 		st.plotly_chart(fig)
 	except Exception as e:
 		print('Ticker not working...')
@@ -163,5 +202,6 @@ def main():
 
     st.markdown("<div style='background-color: purple; padding: 20px; border-radius: 5px; color: white;'><p> The data presented in this app is sourced from Yahoo Finance and have delays. It's recommended to use this tool after market close. Please note that if the ticker entered is not found, no graphs will appear. Also, please avoid using the $ symbol when entering the ticker symbol. There is no need to use capital letters for the ticker.The first graph will pop up fairly quickly. The second one takes a bit longer (15s to 30s).<p>Example: QQQ, SPY, TSLA, AAPL, GOOGL... </p> </p> <p>Disclaimer: The information provided on this website is for educational purposes only and should not be construed as financial advice. The content and data presented may not be accurate or complete, and should not be relied upon for making investment decisions. You should conduct your own research and consult with a qualified financial advisor before making any investment decisions. The authors and publishers of this website are not responsible for any losses that may result from the use of this information.</p></div>", unsafe_allow_html=True)
 
+
 if __name__ == '__main__':
-    main()
+	main()

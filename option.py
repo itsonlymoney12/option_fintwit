@@ -9,7 +9,28 @@ import pandas as pd
 import yfinance as yf
 import numpy as np
 
-
+st.markdown("""
+  <style>
+      ul[class="css-wjbhl0 e1fqkh3o9"]{
+        position: relative;
+        padding-top: 2rem;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .css-17lntkn {
+        font-weight: bold;
+        font-size: 20px;
+        color: yellow;
+      }
+      
+      .css-pkbazv {
+        font-weight: bold;
+        font-size: 20px;
+      }
+  </style>""", unsafe_allow_html=True)
 def get_expiry(ticker):
 	try:
 		nq = yf.Ticker(ticker)

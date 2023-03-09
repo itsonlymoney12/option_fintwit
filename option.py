@@ -238,12 +238,15 @@ def main():
 
     # col1, col2 = st.columns(2)
     # ticker = col1.columns(2)[0].text_input('Enter a Ticker')
-    ticker = st.text_input('Enter a Ticker', 'QQQ').strip().title()
+    col1, col2 = st.columns([1, 3])
+
+    # ticker = st.text_input('Enter a Ticker', 'QQQ').strip().title()
+    ticker = col1.text_input('Enter a Ticker', 'QQQ').strip().title()
 
     if ticker != '':
 	    option_expiry = get_expiry(ticker)
 	    # selected_option = col1.columns(2)[0].selectbox('Select an Option Expiry', option_expiry)
-	    selected_option = st.selectbox('Select an Option Expiry', option_expiry)
+	    selected_option = col2.selectbox('Select an Option Expiry', option_expiry)
 
 	    # col1.columns([1, 3])
 	    # col1.columns(2)[0].width = 1

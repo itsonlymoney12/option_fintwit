@@ -237,7 +237,7 @@ def main():
     st.write(f"<h1 style='font-size: 26px;'>Retail Capital\'s Open Interest by Strike</h1>", unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
-    ticker = col1.columns(2)[0].text_input('Enter a Ticker', 'QQQ').strip().title()
+    ticker = col1.columns(2)[0].text_input('Enter a Ticker', 'QQQ')
 
     if ticker != '':
 	    option_expiry = get_expiry(ticker)

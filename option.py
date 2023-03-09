@@ -238,7 +238,7 @@ def main():
 
     # col1, col2 = st.columns(2)
     # ticker = col1.columns(2)[0].text_input('Enter a Ticker')
-    ticker = st.text_input('Enter a Ticker')
+    ticker = st.text_input('Enter a Ticker', 'QQQ').strip().title()
 
     if ticker != '':
 	    option_expiry = get_expiry(ticker)

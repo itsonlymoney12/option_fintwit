@@ -9,28 +9,8 @@ import pandas as pd
 import yfinance as yf
 import numpy as np
 
-st.markdown("""
-  <style>
-      ul[class="css-wjbhl0 e1fqkh3o9"]{
-        position: relative;
-        padding-top: 2rem;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .css-17lntkn {
-        font-weight: bold;
-        font-size: 20px;
-        color: yellow;
-      }
-      
-      .css-pkbazv {
-        font-weight: bold;
-        font-size: 20px;
-      }
-  </style>""", unsafe_allow_html=True)
+st.set_page_config(layout="wide")
+
 def get_expiry(ticker):
 	try:
 		nq = yf.Ticker(ticker)
@@ -69,48 +49,69 @@ def plot_double_bar_chart(option, ticker):
 
     option_data = get_calls(ticker, option)
 
-    # try:
+    try:
 
-    df_calls = option_data[0]
-    df_puts = option_data[1]
-    last_close = option_data[2]
+	    df_calls = option_data[0]
+	    df_puts = option_data[1]
+	    last_close = option_data[2]
 
-    fig = go.Figure(data=[
-        go.Bar(name='Calls OI', x=df_calls['strike'], y=df_calls['openInterest'], marker=dict(color='green')),
-        go.Bar(name='Puts OI', x=df_puts['strike'], y=df_puts['openInterest'], marker=dict(color='#FF5757'))
-    ])
-    fig.update_layout(barmode='group', title=f'${ticker.upper()} - {option} Open Interest by Strike', xaxis_title='Strike', yaxis_title='Open Interest')
+	    fig = go.Figure(data=[
+	        go.Bar(name='Calls OI', x=df_calls['strike'], y=df_calls['openInterest'], marker=dict(color='green')),
+	        go.Bar(name='Puts OI', x=df_puts['strike'], y=df_puts['openInterest'], marker=dict(color='#FF5757'))
+	    ])
+	    fig.update_layout(barmode='group', 
+	    	title={
+	    	'text':f'${ticker.upper()} - {option} Open Interest by Strike',
+	    	"x": 0.5,
+	        "xanchor": "center",
+	        "yanchor": "top",
+	        "font":{"size":22}
+	        }, 
+	    	xaxis_title={
+	    	'text':'<b>Strike</b>',
+	    	"font": {"size": 18}
+	    	}, 
+	    	yaxis_title={
+	    	'text':'<b>Open Interest</b>',
+	    	'font': {'size':18}
+	    	})
 
-    fig.add_shape(type='line', x0=last_close, y0=0, x1=last_close, y1=max(np.max(df_calls['openInterest']),np.max(df_puts['openInterest'])), line=dict(color='yellow', width=3, dash='dash'), name='Prev. Close')
+	    fig.add_shape(type='line', x0=last_close, y0=0, x1=last_close, y1=max(np.max(df_calls['openInterest']),np.max(df_puts['openInterest'])), line=dict(color='yellow', width=3, dash='dash'), name='Prev. Close')
 
-    fig.add_annotation(text='@itsonlymoney12', xref='paper', yref='paper', x=0.0, y=0.85, showarrow=False, font=dict(color='lightgrey', size=20), opacity=0.4)
+	    fig.add_annotation(text='@itsonlymoney12', xref='paper', yref='paper', x=0.05, y=0.9, showarrow=False, font=dict(color='lightgrey', size=20), opacity=0.4)
 
-    fig.add_trace(
-    	go.Scatter(x=[None], y=[None], mode='lines', line=dict(color='yellow', width=3, dash='dash'), name='Prev. Close')
-    	)
+	    fig.add_trace(
+	    	go.Scatter(x=[None], y=[None], mode='lines', line=dict(color='yellow', width=3, dash='dash'), name='Prev. Close')
+	    	)
 
-    fig.update_layout(
-    	plot_bgcolor='black',
-    	paper_bgcolor='black',
-    	template='plotly_dark',
-    	xaxis=dict(
-	        showgrid=False,
-	        zeroline=False,
-	        zerolinecolor='white',
-	        zerolinewidth=2
-    		),
-    	yaxis=dict(
-	        showgrid=False,
-	        zeroline=False,
-	        zerolinecolor='white',
-	        zerolinewidth=2
-    		)
-    	)
+	    fig.update_layout(
+	    	plot_bgcolor='#1C1F2E',
+	    	paper_bgcolor='#1C1F2E',
+	    	template='plotly_dark',
+		    xaxis={
+		        "tickangle": -45,
+		        "tickfont": {"size": 16},
+		        "showgrid":False,
+		        "zeroline":False,
+		        "zerolinecolor":'white',
+		        "zerolinewidth":2,
+		    },
 
-    st.plotly_chart(fig)
+	    	yaxis={
+		        "tickangle": 0,
+		        "tickfont": {"size": 16},
+		        "showgrid":False,
+		        "zeroline":False,
+		        "zerolinecolor":'white',
+		        "zerolinewidth":2,
+	    	}
+	    	)
 
-    # except Exception as e:
-    	# print('Ticker not working...')
+	    st.plotly_chart(fig, use_container_width=True)
+
+    except Exception as e:
+    	print('Ticker not working...')
+    	st.markdown("<div style='background-color: purple; padding: 20px; border-radius: 5px; color: white;'><p> This ticker doesn't exist in the database.</p></div>", unsafe_allow_html=True)
 
 def get_call_oi(ticker, date_looked):
 	nq = yf.Ticker(ticker)
@@ -160,9 +161,10 @@ def plot_all_expiry(ticker):
 		
 		all_calls = {}
 		all_puts = {}
-
+		all_dates = []
 		for expiry in all_expiry:
 			if '2023' in str(expiry):
+				all_dates.append(expiry)
 				temp = get_call_and_put_oi(ticker, expiry)
 				all_calls[expiry] = temp[0]
 				all_puts[expiry] = temp[1]
@@ -177,52 +179,109 @@ def plot_all_expiry(ticker):
 			go.Bar(name='Calls OI', x=all_calls['Expiry'], y=all_calls['openInterest'], marker=dict(color='green')),
 			go.Bar(name='Puts OI', x=all_puts['Expiry'], y=all_puts['openInterest'], marker=dict(color='#FF5757'))
 			])
-		fig.update_layout(barmode='group', title=f'${ticker.upper()} - Open Interest by Expiry Date in 2023', xaxis_title='Expiry Date', yaxis_title='Open Interest')
+
+		fig.update_layout(barmode='group', 
+			title={
+			'text':f'${ticker.upper()} - Open Interest by Expiry Date in 2023',
+			"x": 0.5,
+			"xanchor": "center",
+			"yanchor": "top",
+			"font":{"size":22}
+			}, 
+			xaxis_title={
+			'text':'<b>Expiry Date</b>',
+			"font": {"size": 18}
+			}, 
+			yaxis_title={
+			'text':'<b>Open Interest</b>',
+			'font': {'size':18}
+			},
+		    xaxis={
+		        "type": "category",
+		        "tickmode": "array",
+		        "tickvals": all_dates
+		    }
+			)
+
 		fig.add_annotation(text='@itsonlymoney12', xref='paper', yref='paper', x=0.5, y=0.85, showarrow=False, font=dict(color='lightgrey',size=20), opacity=0.4)
 
 		fig.update_layout(
-		    plot_bgcolor='black',
-		    paper_bgcolor='black',
-		    template='plotly_dark',
-		    xaxis=dict(
-		        showgrid=False,
-		        zeroline=False,
-		        zerolinecolor='white',
-		        zerolinewidth=2
-		    ),
-		    yaxis=dict(
-		        showgrid=False,
-		        zeroline=False,
-		        zerolinecolor='white',
-		        zerolinewidth=2
-		    )
-		)
+			plot_bgcolor='#1C1F2E',
+			paper_bgcolor='#1C1F2E',
+			template='plotly_dark',
+			xaxis={
+			"tickangle": -45,
+			"tickfont": {"size": 16},
+			"showgrid":False,
+			"zeroline":False,
+			"zerolinecolor":'white',
+			"zerolinewidth":2,
+			},
 
-		st.plotly_chart(fig)
+			yaxis={
+			"tickangle": 0,
+			"tickfont": {"size": 16},
+			"showgrid":False,
+			"zeroline":False,
+			"zerolinecolor":'white',
+			"zerolinewidth":2,
+			}
+			)
+
+		st.plotly_chart(fig, use_container_width=True)
+
 	except Exception as e:
 		print('Ticker not working...')
 
 def main():
-    st.title('Option Analysis - by Retail Capital')
+    st.write(f"<h1 style='font-size: 26px;'>Retail Capital\'s Open Interest by Strike</h1>", unsafe_allow_html=True)
 
-    ticker = st.text_input('Enter a Ticker')
+    col1, col2 = st.columns(2)
+    ticker = col1.columns(2)[0].text_input('Enter a Ticker', 'QQQ').strip().title()
+
     if ticker != '':
 	    option_expiry = get_expiry(ticker)
-	    selected_option = st.selectbox('Select an Option Expiry', option_expiry)
+	    selected_option = col1.columns(2)[0].selectbox('Select an Option Expiry', option_expiry)
+
+	    col1.columns([1, 3])
+	    col1.columns(2)[0].width = 1
+	    col1.columns(2)[1].width = 1
+
+	    plot_double_bar_chart(selected_option, ticker)
 
 	    col1, col2 = st.columns(2)
-	    
+
 	    with col1:
 	    	st.markdown("<a href='https://retailcapital.substack.com/' target='_blank' style='color: white; display: block; text-align: center; width: 100%; background-color: #567BF4; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Read retailcapital.substack.com</a>", unsafe_allow_html=True)
 
 	    with col2:
 	 	   st.markdown("<a href='https://apextraderfunding.com/member/aff/go/itsonlymoney?c=GVXZJABB' target='_blank' style='color: white; display: block; text-align: center; width: 100%; background-color: #567BF4; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;'>APEX PROMO | Use 'GVXZJABB'</a>", unsafe_allow_html=True)
 
-	    plot_double_bar_chart(selected_option, ticker)
 	    plot_all_expiry(ticker)
 
-    st.markdown("<div style='background-color: purple; padding: 20px; border-radius: 5px; color: white;'><p> The data presented in this app is sourced from Yahoo Finance and have delays. It's recommended to use this tool after market close. Please note that if the ticker entered is not found, no graphs will appear. Also, please avoid using the $ symbol when entering the ticker symbol. There is no need to use capital letters for the ticker.The first graph will pop up fairly quickly. The second one takes a bit longer (15s to 30s).<p>Example: QQQ, SPY, TSLA, AAPL, GOOGL... </p> </p> <p>Disclaimer: The information provided on this website is for educational purposes only and should not be construed as financial advice. The content and data presented may not be accurate or complete, and should not be relied upon for making investment decisions. You should conduct your own research and consult with a qualified financial advisor before making any investment decisions. The authors and publishers of this website are not responsible for any losses that may result from the use of this information.</p></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: justify; padding: 20px; border-radius: 5px; color: white;'><p> The data presented in this app is sourced from Yahoo Finance and have delays. It's recommended to use this tool after market close. Please note that if the ticker entered is not found, no graphs will appear. Also, please avoid using the $ symbol when entering the ticker symbol. There is no need to use capital letters for the ticker.The first graph will pop up fairly quickly. The second one takes a bit longer (15s to 30s).<p>Example: QQQ, SPY, TSLA, AAPL, GOOGL... </p> </p> <p>Disclaimer: The information provided on this website is for educational purposes only and should not be construed as financial advice. The content and data presented may not be accurate or complete, and should not be relied upon for making investment decisions. You should conduct your own research and consult with a qualified financial advisor before making any investment decisions. The authors and publishers of this website are not responsible for any losses that may result from the use of this information.</p></div>", unsafe_allow_html=True)
 
+st.markdown(
+	"""
+	<style>
+	.stPlotlyChart {
+	border-radius: 25px;
+	overflow: hidden;
+	}
+	</style>
+	""",
+	unsafe_allow_html=True,
+	)
+
+st.markdown("""
+    <style>
+        body {
+            background-color: #1B1B1B !important;
+            color: #FFFFFF !important;
+        }
+        /* Add more CSS styles here as needed */
+    </style>
+""", unsafe_allow_html=True)
 
 if __name__ == '__main__':
 	main()

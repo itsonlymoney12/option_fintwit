@@ -236,16 +236,18 @@ def plot_all_expiry(ticker):
 def main():
     st.write(f"<h1 style='font-size: 26px;'>Retail Capital\'s Open Interest by Strike</h1>", unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
-    ticker = col1.columns(2)[0].text_input('Enter a Ticker')
+    # col1, col2 = st.columns(2)
+    # ticker = col1.columns(2)[0].text_input('Enter a Ticker')
+    ticker = st.text_input('Enter a Ticker')
 
     if ticker != '':
 	    option_expiry = get_expiry(ticker)
-	    selected_option = col1.columns(2)[0].selectbox('Select an Option Expiry', option_expiry)
+	    # selected_option = col1.columns(2)[0].selectbox('Select an Option Expiry', option_expiry)
+	    selected_option = st.selectbox('Select an Option Expiry', option_expiry)
 
-	    col1.columns([1, 3])
-	    col1.columns(2)[0].width = 1
-	    col1.columns(2)[1].width = 1
+	    # col1.columns([1, 3])
+	    # col1.columns(2)[0].width = 1
+	    # col1.columns(2)[1].width = 1
 
 	    plot_double_bar_chart(selected_option, ticker)
 

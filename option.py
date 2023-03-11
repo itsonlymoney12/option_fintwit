@@ -97,9 +97,7 @@ def plot_max_pain(ticker, option_date):
 		fig.update_layout(
 			plot_bgcolor='#1C1F2E',
 			paper_bgcolor='#1C1F2E',
-			# plot_bgcolor_border	='khaki',
 			template='plotly_dark',
-			# bordercolor='orange',
 			xaxis={
 			"tickangle": -45,
 			"tickfont": {"size": 16},
@@ -108,7 +106,6 @@ def plot_max_pain(ticker, option_date):
 			"zerolinecolor":'white',
 			"zerolinewidth":2,
 			},
-
 			yaxis={
 			"tickangle": 0,
 			"tickfont": {"size": 16},
@@ -118,26 +115,20 @@ def plot_max_pain(ticker, option_date):
 			"zerolinewidth":2,
 			}
 			)
+		fig.update_layout(yaxis=dict(tickmode='array', tickvals=[]))
+
 		fig.add_annotation(
 			x=(max_pain + prior_max_pain)/2, y=call_values[index_maxpain-1],
 			ax=0, 
-		    # ay=0,
-		    # arrowhead=2,
-		    # arrowsize=5,
 		    text=f'${max_pain}',
-		    # showarrow=True,
 		    font=dict(
 		    	family="Courier New, monospace",
 		    	size=18,
 		    	color="yellow",
-		        # weight="bold"
 		        ),
-		    # align='center',
-		    # arrowcolor='yellow',
-		    # bgcolor='red',
 		    opacity=1
 		    )
-		fig.update_layout(xaxis_range=[put_strikes.min(), call_strikes.max()])
+		fig.update_layout(xaxis_range=[max(put_strikes.min(), max_pain*0.92), min(call_strikes.max(), max_pain*1.08)])
 		st.plotly_chart(fig, use_container_width=True)
 	except Exception as e:
 		print('Ticker not working...')

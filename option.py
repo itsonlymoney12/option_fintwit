@@ -129,6 +129,7 @@ def plot_max_pain(ticker, option_date):
 		    opacity=1
 		    )
 		fig.update_layout(xaxis_range=[max(put_strikes.min(), max_pain*0.92), min(call_strikes.max(), max_pain*1.08)])
+		fig.add_annotation(text='@itsonlymoney12', xref='paper', yref='paper', x=0.5, y=0.8, showarrow=False, font=dict(color='lightgrey', size=20), opacity=0.4)
 		st.plotly_chart(fig, use_container_width=True)
 	except Exception as e:
 		print('Ticker not working...')
@@ -348,7 +349,7 @@ def main():
 	    with col2:
 	 	   st.markdown("<a href='https://apextraderfunding.com/member/aff/go/itsonlymoney?c=GVXZJABB' target='_blank' style='color: white; display: block; text-align: center; width: 100%; background-color: #567BF4; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;'>APEX PROMO | Use 'GVXZJABB'</a>", unsafe_allow_html=True)
 
-	 	# st.write("Option Expiry is in beta mode", unsafe_allow_html=True)
+	    st.write("Option Expiry is in beta mode with known issues on some tickers.", unsafe_allow_html=True)
 	    plot_max_pain(ticker,selected_option)
 	    plot_all_expiry(ticker)	    	
 

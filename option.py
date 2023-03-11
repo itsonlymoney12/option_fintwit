@@ -179,8 +179,8 @@ def plot_double_bar_chart(option, ticker):
 		        "zerolinewidth":2,
 	    	}
 	    	)
-	    # if len(df_puts) > 100:
-	    	# fig.update_layout(xaxis_range=[max(last_close*0.65,df_puts['strike'].min()),min(last_close*1.35, df_calls['strike'].max())])
+	    if len(df_calls) > 70:
+	    	fig.update_layout(xaxis_range=[max(last_close*0.65,df_puts['strike'].min()),min(last_close*1.35, df_calls['strike'].max())])
 
 	    st.plotly_chart(fig, use_container_width=True)
 
